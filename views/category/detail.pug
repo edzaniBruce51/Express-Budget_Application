@@ -1,0 +1,89 @@
+extends ../layout
+
+block content
+  .container
+    .d-flex.justify-content-between.align-items-center.mb-4
+      h1.h2 
+        span.badge.rounded-pill.me-2(style=`background-color: ${category.color}`)
+        | #{category.name}
+      .btn-group
+        a.btn.btn-outline-secondary(href=`/budget/category/${category._id}/edit`)
+          i.bi.bi-pencil.me-1
+          | Edit
+        a.btn.btn-outline-primary(href='/budget/categories')
+          i.bi.bi-arrow-left.me-1
+          | Back
+
+    // Category details
+    .card.mb-4
+      .card-body
+        if category.description
+          p.lead= category.description
+        else
+          p.lead.text-muted.fst-italic No description provided.
+        
+        .row.mt-4
+          .col-md-6
+            .card.bg-light.mb-3
+              .card-body
+                h5.card-title Total Spent
+                h3.text-danger $#{totalSpent}
+          .col-md-6
+            .card.bg-light.mb-3
+              .card-body
+                h5.card-title Associated Items
+                .d-flex.justify-content-around
+                  div
+                    h3.text-primary= expenses.length
+                    p.mb-0 Expenses
+                  div
+                    h3.text-success= budgets.length
+                    p.mb-0 Budgets
+
+    // Expenses section
+    if expenses.length > 0
+      h3.mb-3 Recent Expenses
+      .table-responsive
+        table.table.table-hover
+          thead.table-light
+            tr
+              th Date
+              th Description
+              th Amount
+              th Actions
+          tbody
+            each expense in expenses
+              tr
+                td= expense.date.toLocaleDateString()
+                td= expense.description
+                td.text-end.fw-bold $#{expense.amount.toFixed(2)}
+                td
+                  a.btn.btn-sm.btn-outline-primary.me-1(href=`/budget/expense/${expense._id}`)
+                    i.bi.bi-eye
+                  a.btn.btn-sm.btn-outline-secondary(href=`/budget/expense/${expense._id}/edit`)
+                    i.bi.bi-pencil
+    else
+      .alert.alert-info
+        i.bi.bi-info-circle.me-2
+        | No expenses found for this category.
+
+    // Budgets section
+    if budgets.length > 0
+      h3.mb-3 Budgets
+      .row
+        each budget in budgets
+          .col-md-6.mb-3
+            .card
+              .card-body
+                h5.card-title= budget.name
+                p.card-text
+                  strong Amount: 
+                  | $#{budget.amount.toFixed(2)}
+                p.card-text
+                  strong Period: 
+                  | #{budget.start_date.toLocaleDateString()} to #{budget.end_date.toLocaleDateString()}
+                a.btn.btn-sm.btn-primary(href=`/budget/budget/${budget._id}`) View Details
+    else
+      .alert.alert-info
+        i.bi.bi-info-circle.me-2
+        | No budgets found for this category.

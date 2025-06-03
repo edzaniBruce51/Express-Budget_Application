@@ -1,0 +1,132 @@
+extends ../layout
+
+block content
+  .container
+    .d-flex.justify-content-between.align-items-center.mb-4
+      h1.h2 #{budget.name}
+      .btn-group
+        a.btn.btn-outline-secondary(href=`/budget/budget/${budget._id}/edit`)
+          i.bi.bi-pencil.me-1
+          | Edit
+        a.btn.btn-outline-primary(href='/budget')
+          i.bi.bi-arrow-left.me-1
+          | Back
+
+    // Budget overview
+    .card.mb-4
+      .card-body
+        .row
+          .col-md-8
+            if budget.description
+              p.lead= budget.description
+            else
+              p.lead.text-muted.fst-italic No description provided.
+            
+            .row.mt-3
+              .col-sm-6
+                p.mb-1
+                  strong Category: 
+                  span.badge.rounded-pill.me-1(style=`background-color: ${budget.category.color}`)
+                  | #{budget.category.name}
+              .col-sm-6
+                p.mb-1
+                  strong Period: 
+                  | #{budget.start_date.toLocaleDateString()} to #{budget.end_date.toLocaleDateString()}
+              .col-sm-6
+                p.mb-1
+                  strong Days Remaining: 
+                  if stats.daysRemaining > 0
+                    span.text-success= stats.daysRemaining
+                  else if stats.daysRemaining === 0
+                    span.text-warning Today is the last day
+                  else
+                    span.text-danger Expired
+              .col-sm-6
+                p.mb-1
+                  strong Created: 
+                  | #{budget.createdAt.toLocaleDateString()}
+
+          .col-md-4
+            .text-center
+              .progress.mb-2(style="height: 20px;")
+                .progress-bar(
+                  class=stats.progress > 100 ? 'bg-danger' : stats.progress > 80 ? 'bg-warning' : 'bg-success',
+                  style=`width: ${Math.min(stats.progress, 100)}%`,
+                  role="progressbar"
+                )
+                  | #{stats.progress}%
+              p.small.text-muted Budget Progress
+
+    // Financial summary
+    .row.mb-4
+      .col-md-3
+        .card.bg-primary.text-white
+          .card-body.text-center
+            h5.card-title Budget Amount
+            h3.mb-0 $#{budget.amount.toFixed(2)}
+      .col-md-3
+        .card.bg-danger.text-white
+          .card-body.text-center
+            h5.card-title Total Spent
+            h3.mb-0 $#{stats.totalSpent}
+      .col-md-3
+        .card(class=stats.remaining >= 0 ? 'bg-success' : 'bg-warning')
+          .card-body.text-center.text-white
+            h5.card-title Remaining
+            h3.mb-0 $#{stats.remaining}
+      .col-md-3
+        .card.bg-info.text-white
+          .card-body.text-center
+            h5.card-title Expenses
+            h3.mb-0= expenses.length
+
+    // Expenses for this budget
+    if expenses.length > 0
+      h3.mb-3 Expenses in Budget Period
+      .table-responsive
+        table.table.table-hover
+          thead.table-light
+            tr
+              th Date
+              th Description
+              th Amount
+              th Actions
+          tbody
+            each expense in expenses
+              tr
+                td= expense.date.toLocaleDateString()
+                td= expense.description
+                td.text-end.fw-bold $#{expense.amount.toFixed(2)}
+                td
+                  a.btn.btn-sm.btn-outline-primary.me-1(href=`/budget/expense/${expense._id}`)
+                    i.bi.bi-eye
+                  a.btn.btn-sm.btn-outline-secondary(href=`/budget/expense/${expense._id}/edit`)
+                    i.bi.bi-pencil
+      
+      .mt-3
+        .d-flex.justify-content-between.align-items-center
+          p.mb-0
+            strong Total: $#{stats.totalSpent}
+          if stats.remaining < 0
+            .alert.alert-warning.mb-0.py-2.px-3
+              i.bi.bi-exclamation-triangle.me-1
+              | Budget exceeded by $#{Math.abs(stats.remaining)}
+    else
+      .alert.alert-info
+        i.bi.bi-info-circle.me-2
+        | No expenses found for this budget period.
+        
+    // Quick actions
+    .mt-4
+      .card.bg-light
+        .card-body
+          h5.card-title
+            i.bi.bi-lightning.me-2
+            | Quick Actions
+          .d-flex.gap-2.flex-wrap
+            a.btn.btn-outline-primary(href='/budget/expense/create')
+              i.bi.bi-plus-circle.me-1
+              | Add Expense
+            a.btn.btn-outline-secondary(href=`/budget/category/${budget.category._id}`)
+              i.bi.bi-tags.me-1
+              | View Category
