@@ -1,0 +1,127 @@
+extends ../layout
+
+block content
+  .row.justify-content-center
+    .col-md-8.col-lg-6
+      .card
+        .card-header
+          h4.mb-0= title
+        .card-body
+          // Display validation errors
+          if errors && errors.length > 0
+            .alert.alert-danger
+              ul.mb-0
+                each error in errors
+                  li= error.msg
+
+          form(method='POST', class='needs-validation', novalidate)
+            .mb-3
+              label.form-label(for='name') Category Name
+              input.form-control(
+                type='text',
+                id='name',
+                name='name',
+                value=category ? category.name : '',
+                required,
+                maxlength='50',
+                placeholder='e.g., Food & Dining, Transportation'
+              )
+              .invalid-feedback Please provide a category name.
+
+            .mb-3
+              label.form-label(for='description') Description (Optional)
+              textarea.form-control(
+                id='description',
+                name='description',
+                rows='3',
+                maxlength='200',
+                placeholder='Brief description of what this category includes...'
+              )= category ? category.description : ''
+              .form-text #{category && category.description ? category.description.length : 0}/200 characters
+
+            .mb-3
+              label.form-label(for='color') Category Color
+              .row.align-items-center
+                .col-auto
+                  input.form-control.form-control-color(
+                    type='color',
+                    id='color',
+                    name='color',
+                    value=category ? category.color : '#007bff',
+                    style='width: 60px; height: 40px;'
+                  )
+                .col
+                  .form-text Choose a color to help identify this category in charts and lists.
+
+            // Color presets
+            .mb-3
+              label.form-label Quick Color Selection
+              .d-flex.flex-wrap.gap-2
+                - const presetColors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F', '#FF8A80', '#81C784']
+                each color in presetColors
+                  button.btn.btn-sm.border.rounded-circle.color-preset(
+                    type='button',
+                    style=`background-color: ${color}; width: 30px; height: 30px;`,
+                    data-color=color,
+                    title=color
+                  )
+
+            .d-flex.justify-content-between
+              a.btn.btn-secondary(href='/budget/categories')
+                i.bi.bi-arrow-left.me-1
+                | Back to Categories
+              button.btn.btn-primary(type='submit')
+                i.bi.bi-save.me-1
+                = category ? 'Update Category' : 'Create Category'
+
+block scripts
+  script.
+    // Character counter for description
+    const descriptionTextarea = document.getElementById('description');
+    const formText = descriptionTextarea.nextElementSibling;
+    
+    descriptionTextarea.addEventListener('input', function() {
+      const length = this.value.length;
+      formText.textContent = `${length}/200 characters`;
+      
+      if (length > 180) {
+        formText.classList.add('text-warning');
+      } else {
+        formText.classList.remove('text-warning');
+      }
+    });
+
+    // Color preset selection
+    const colorInput = document.getElementById('color');
+    const colorPresets = document.querySelectorAll('.color-preset');
+    
+    colorPresets.forEach(function(preset) {
+      preset.addEventListener('click', function() {
+        const color = this.getAttribute('data-color');
+        colorInput.value = color;
+        
+        // Update active state
+        colorPresets.forEach(p => p.classList.remove('border-dark', 'border-3'));
+        this.classList.add('border-dark', 'border-3');
+      });
+    });
+
+    // Set active preset on load
+    const currentColor = colorInput.value;
+    colorPresets.forEach(function(preset) {
+      if (preset.getAttribute('data-color') === currentColor) {
+        preset.classList.add('border-dark', 'border-3');
+      }
+    });
+
+    // Update preset selection when color input changes
+    colorInput.addEventListener('change', function() {
+      const selectedColor = this.value;
+      colorPresets.forEach(function(preset) {
+        if (preset.getAttribute('data-color') === selectedColor) {
+          preset.classList.add('border-dark', 'border-3');
+        } else {
+          preset.classList.remove('border-dark', 'border-3');
+        }
+      });
+    });

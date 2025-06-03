@@ -1,0 +1,62 @@
+extends layout
+
+block content
+  .row
+    .col-lg-6
+      .hero-section
+        h1.display-4.fw-bold.text-primary Budget Tracker
+        p.lead= description
+        
+        .d-grid.gap-2.d-md-flex.justify-content-md-start.mt-4
+          a.btn.btn-primary.btn-lg.px-4.me-md-2(href='/auth/register')
+            i.bi.bi-person-plus.me-2
+            | Get Started
+          a.btn.btn-outline-secondary.btn-lg.px-4(href='/auth/login')
+            i.bi.bi-box-arrow-in-right.me-2
+            | Login
+
+    .col-lg-6
+      .text-center
+        img.img-fluid.rounded(src='/images/budget-hero.svg', alt='Budget Tracking Illustration', style='max-height: 400px;')
+
+  .row.mt-5
+    .col-12
+      h2.text-center.mb-5 Why Choose Budget Tracker?
+
+  .row.g-4
+    .col-md-4
+      .card.h-100.border-0.shadow-sm
+        .card-body.text-center
+          .bg-primary.text-white.rounded-circle.d-inline-flex.align-items-center.justify-content-center.mb-3(style='width: 60px; height: 60px;')
+            i.bi.bi-graph-up.fs-4
+          h5.card-title Track Expenses
+          p.card-text Monitor your spending with detailed expense tracking and categorization.
+
+    .col-md-4
+      .card.h-100.border-0.shadow-sm
+        .card-body.text-center
+          .bg-success.text-white.rounded-circle.d-inline-flex.align-items-center.justify-content-center.mb-3(style='width: 60px; height: 60px;')
+            i.bi.bi-piggy-bank.fs-4
+          h5.card-title Budget Planning
+          p.card-text Set budgets for different categories and monitor your progress in real-time.
+
+    .col-md-4
+      .card.h-100.border-0.shadow-sm
+        .card-body.text-center
+          .bg-info.text-white.rounded-circle.d-inline-flex.align-items-center.justify-content-center.mb-3(style='width: 60px; height: 60px;')
+            i.bi.bi-bar-chart.fs-4
+          h5.card-title Visual Analytics
+          p.card-text Get insights with beautiful charts and reports to understand your spending patterns.
+
+  .row.mt-5
+    .col-12
+      .bg-light.rounded.p-5.text-center
+        h3.mb-3 Ready to Take Control of Your Finances?
+        p.lead.mb-4 Join thousands of users who have improved their financial health with Budget Tracker.
+        a.btn.btn-primary.btn-lg(href='/auth/register')
+          i.bi.bi-rocket-takeoff.me-2
+          | Start Your Journey
+
+block scripts
+  script.
+    // Add any home page specific JavaScript here

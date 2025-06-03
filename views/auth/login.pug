@@ -1,0 +1,61 @@
+extends ../layout
+
+block content
+  .row.justify-content-center
+    .col-md-6.col-lg-4
+      .card.shadow
+        .card-body.p-4
+          .text-center.mb-4
+            i.bi.bi-box-arrow-in-right.text-primary.display-4
+            h3.mt-2 Login
+            p.text-muted Welcome back! Please sign in to your account.
+
+          // Display validation errors
+          if errors && errors.length > 0
+            .alert.alert-danger
+              ul.mb-0
+                each error in errors
+                  li= error.msg
+
+          form(method='POST', action='/auth/login')
+            .mb-3
+              label.form-label(for='username') Username
+              input.form-control(
+                type='text',
+                id='username',
+                name='username',
+                value=username || '',
+                required,
+                autofocus
+              )
+
+            .mb-3
+              label.form-label(for='password') Password
+              input.form-control(
+                type='password',
+                id='password',
+                name='password',
+                required
+              )
+
+            .d-grid.mb-3
+              button.btn.btn-primary(type='submit')
+                i.bi.bi-box-arrow-in-right.me-1
+                | Login
+
+          .text-center
+            p.mb-0
+              | Don't have an account? 
+              a(href='/auth/register') Sign up here
+
+      .text-center.mt-3
+        .card.bg-light
+          .card-body.py-3
+            h6.mb-2 Demo Account
+            p.small.text-muted.mb-2 Try the app with our demo account:
+            p.small.mb-0
+              strong Username: 
+              | demo
+              br
+              strong Password: 
+              | password123

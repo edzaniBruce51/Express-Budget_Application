@@ -1,0 +1,126 @@
+extends ../layout
+
+block content
+  .row.justify-content-center
+    .col-md-8.col-lg-6
+      .card
+        .card-header
+          h4.mb-0= title
+        .card-body
+          // Display validation errors
+          if errors && errors.length > 0
+            .alert.alert-danger
+              ul.mb-0
+                each error in errors
+                  li= error.msg
+
+          form(method='POST', class='needs-validation', novalidate)
+            .mb-3
+              label.form-label(for='description') Description
+              input.form-control(
+                type='text',
+                id='description',
+                name='description',
+                value=expense ? expense.description : '',
+                required,
+                maxlength='200',
+                placeholder='e.g., Grocery shopping, Coffee, Gas'
+              )
+              .invalid-feedback Please provide a description.
+
+            .row
+              .col-md-6
+                .mb-3
+                  label.form-label(for='amount') Amount ($)
+                  input.form-control(
+                    type='number',
+                    id='amount',
+                    name='amount',
+                    value=expense ? expense.amount : '',
+                    step='0.01',
+                    min='0.01',
+                    required
+                  )
+                  .invalid-feedback Please provide a valid amount.
+
+              .col-md-6
+                .mb-3
+                  label.form-label(for='date') Date
+                  input.form-control(
+                    type='date',
+                    id='date',
+                    name='date',
+                    value=expense && expense.date ? expense.date : new Date().toISOString().split('T')[0],
+                    required
+                  )
+                  .invalid-feedback Please provide a date.
+
+            .mb-3
+              label.form-label(for='category') Category
+              select.form-select(id='category', name='category', required)
+                option(value='', disabled, selected=!expense) Select category
+                each category in categories
+                  option(
+                    value=category._id,
+                    selected=expense && expense.category && expense.category.toString() === category._id.toString()
+                  )= category.name
+              .invalid-feedback Please select a category.
+              if categories.length === 0
+                .form-text.text-warning
+                  i.bi.bi-exclamation-triangle.me-1
+                  | No categories available. 
+                  a(href='/budget/category/create') Create a category first.
+
+            .mb-3
+              label.form-label(for='payment_method') Payment Method
+              select.form-select(id='payment_method', name='payment_method', required)
+                option(value='cash', selected=expense && expense.payment_method === 'cash') Cash
+                option(value='credit_card', selected=expense && expense.payment_method === 'credit_card') Credit Card
+                option(value='debit_card', selected=expense && expense.payment_method === 'debit_card') Debit Card
+                option(value='bank_transfer', selected=expense && expense.payment_method === 'bank_transfer') Bank Transfer
+                option(value='other', selected=expense && expense.payment_method === 'other') Other
+              .invalid-feedback Please select a payment method.
+
+            .mb-3
+              label.form-label(for='notes') Notes (Optional)
+              textarea.form-control(
+                id='notes',
+                name='notes',
+                rows='3',
+                maxlength='500',
+                placeholder='Additional notes about this expense...',
+                data-auto-resize
+              )= expense ? expense.notes : ''
+              .form-text #{expense && expense.notes ? expense.notes.length : 0}/500 characters
+
+            .d-flex.justify-content-between
+              a.btn.btn-secondary(href='/budget/expenses')
+                i.bi.bi-arrow-left.me-1
+                | Back to Expenses
+              button.btn.btn-primary(type='submit', disabled=categories.length === 0)
+                i.bi.bi-save.me-1
+                = expense ? 'Update Expense' : 'Add Expense'
+
+block scripts
+  script.
+    // Character counter for notes
+    const notesTextarea = document.getElementById('notes');
+    const formText = notesTextarea.nextElementSibling;
+    
+    notesTextarea.addEventListener('input', function() {
+      const length = this.value.length;
+      formText.textContent = `${length}/500 characters`;
+      
+      if (length > 450) {
+        formText.classList.add('text-warning');
+      } else {
+        formText.classList.remove('text-warning');
+      }
+    });
+
+    // Auto-focus amount field after selecting category
+    document.getElementById('category').addEventListener('change', function() {
+      if (this.value && !document.getElementById('amount').value) {
+        document.getElementById('amount').focus();
+      }
+    });

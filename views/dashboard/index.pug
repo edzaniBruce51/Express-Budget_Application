@@ -1,0 +1,167 @@
+extends ../layout
+
+block content
+  .d-flex.justify-content-between.align-items-center.mb-4
+    h1.h2 Dashboard
+    .btn-group(role='group')
+      a.btn.btn-primary(href='/budget/expense/create')
+        i.bi.bi-plus-circle.me-1
+        | Add Expense
+      a.btn.btn-outline-primary(href='/budget/create')
+        i.bi.bi-piggy-bank.me-1
+        | New Budget
+
+  // Stats Cards
+  .row.g-4.mb-4
+    .col-md-3
+      .card.bg-primary.text-white
+        .card-body
+          .d-flex.justify-content-between.align-items-center
+            div
+              h6.card-title.mb-0 Monthly Expenses
+              h4.mb-0 $#{stats.totalMonthlyExpenses}
+            i.bi.bi-receipt.fs-1.opacity-75
+          small #{currentMonth}
+
+    .col-md-3
+      .card.bg-success.text-white
+        .card-body
+          .d-flex.justify-content-between.align-items-center
+            div
+              h6.card-title.mb-0 Total Budgets
+              h4.mb-0 $#{stats.totalBudgetAmount}
+            i.bi.bi-piggy-bank.fs-1.opacity-75
+          small #{stats.budgetCount} active budgets
+
+    .col-md-3
+      .card.bg-info.text-white
+        .card-body
+          .d-flex.justify-content-between.align-items-center
+            div
+              h6.card-title.mb-0 Remaining Budget
+              h4.mb-0 $#{stats.remainingBudget}
+            i.bi.bi-wallet.fs-1.opacity-75
+          small This month
+
+    .col-md-3
+      .card.bg-warning.text-white
+        .card-body
+          .d-flex.justify-content-between.align-items-center
+            div
+              h6.card-title.mb-0 Categories
+              h4.mb-0 #{stats.categoryCount}
+            i.bi.bi-tags.fs-1.opacity-75
+          small #{stats.expenseCount} expenses
+
+  .row
+    // Budget Progress
+    .col-lg-8
+      .card.mb-4
+        .card-header.d-flex.justify-content-between.align-items-center
+          h5.mb-0 Budget Progress
+          a.btn.btn-sm.btn-outline-primary(href='/budget') View All
+
+        .card-body
+          if budgets && budgets.length > 0
+            each budget in budgets
+              .mb-3
+                .d-flex.justify-content-between.align-items-center.mb-1
+                  span.fw-medium= budget.category.name
+                  small.text-muted $#{budget.spent} / $#{budget.amount}
+                
+                .progress(style='height: 8px;')
+                  - const progressClass = budget.progress > 90 ? 'bg-danger' : budget.progress > 75 ? 'bg-warning' : 'bg-success'
+                  .progress-bar(
+                    class=progressClass,
+                    style=`width: ${Math.min(budget.progress, 100)}%`,
+                    aria-valuenow=budget.progress,
+                    aria-valuemin='0',
+                    aria-valuemax='100'
+                  )
+                
+                .d-flex.justify-content-between.mt-1
+                  small.text-muted #{budget.progress}% used
+                  small.text-muted $#{budget.remaining} remaining
+          else
+            .text-center.py-4
+              i.bi.bi-piggy-bank.text-muted.display-4
+              p.text-muted.mt-2 No budgets created yet
+              a.btn.btn-primary(href='/budget/create') Create Your First Budget
+
+    // Expense Chart
+    .col-lg-4
+      .card.mb-4
+        .card-header
+          h5.mb-0 Expenses by Category
+        .card-body
+          if expensesByCategory && expensesByCategory.length > 0
+            canvas#expenseChart(width='400', height='400')
+          else
+            .text-center.py-4
+              i.bi.bi-pie-chart.text-muted.display-4
+              p.text-muted.mt-2 No expenses this month
+
+  // Recent Expenses
+  .row
+    .col-12
+      .card
+        .card-header.d-flex.justify-content-between.align-items-center
+          h5.mb-0 Recent Expenses
+          a.btn.btn-sm.btn-outline-primary(href='/budget/expenses') View All
+
+        .card-body
+          if recentExpenses && recentExpenses.length > 0
+            .table-responsive
+              table.table.table-hover
+                thead
+                  tr
+                    th Date
+                    th Description
+                    th Category
+                    th Amount
+                tbody
+                  each expense in recentExpenses
+                    tr
+                      td= expense.date.toLocaleDateString()
+                      td= expense.description
+                      td
+                        span.badge.rounded-pill(style=`background-color: ${expense.category.color}`)= expense.category.name
+                      td.text-end $#{expense.amount.toFixed(2)}
+          else
+            .text-center.py-4
+              i.bi.bi-receipt.text-muted.display-4
+              p.text-muted.mt-2 No expenses recorded yet
+              a.btn.btn-primary(href='/budget/expense/create') Add Your First Expense
+
+block scripts
+  script.
+    // Expense Chart
+    const chartData = !{chartData};
+    if (chartData.labels.length > 0) {
+      const ctx = document.getElementById('expenseChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: chartData.labels,
+          datasets: [{
+            data: chartData.data,
+            backgroundColor: chartData.colors,
+            borderWidth: 2,
+            borderColor: '#fff'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                padding: 20,
+                usePointStyle: true
+              }
+            }
+          }
+        }
+      });
+    }

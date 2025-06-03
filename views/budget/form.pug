@@ -1,0 +1,143 @@
+extends ../layout
+
+block content
+  .row.justify-content-center
+    .col-md-8.col-lg-6
+      .card
+        .card-header
+          h4.mb-0= title
+        .card-body
+          // Display validation errors
+          if errors && errors.length > 0
+            .alert.alert-danger
+              ul.mb-0
+                each error in errors
+                  li= error.msg
+
+          form(method='POST', class='needs-validation', novalidate)
+            .mb-3
+              label.form-label(for='name') Budget Name
+              input.form-control(
+                type='text',
+                id='name',
+                name='name',
+                value=budget ? budget.name : '',
+                required,
+                maxlength='100'
+              )
+              .invalid-feedback Please provide a budget name.
+
+            .mb-3
+              label.form-label(for='amount') Budget Amount ($)
+              input.form-control(
+                type='number',
+                id='amount',
+                name='amount',
+                value=budget ? budget.amount : '',
+                step='0.01',
+                min='0.01',
+                required
+              )
+              .invalid-feedback Please provide a valid amount.
+
+            .mb-3
+              label.form-label(for='period') Budget Period
+              select.form-select(id='period', name='period', required)
+                option(value='', disabled, selected=!budget) Select period
+                option(value='weekly', selected=budget && budget.period === 'weekly') Weekly
+                option(value='monthly', selected=budget && budget.period === 'monthly') Monthly
+                option(value='yearly', selected=budget && budget.period === 'yearly') Yearly
+              .invalid-feedback Please select a budget period.
+
+            .row
+              .col-md-6
+                .mb-3
+                  label.form-label(for='start_date') Start Date
+                  input.form-control(
+                    type='date',
+                    id='start_date',
+                    name='start_date',
+                    value=budget && budget.start_date ? budget.start_date.toISOString().split('T')[0] : '',
+                    required
+                  )
+                  .invalid-feedback Please provide a start date.
+
+              .col-md-6
+                .mb-3
+                  label.form-label(for='end_date') End Date
+                  input.form-control(
+                    type='date',
+                    id='end_date',
+                    name='end_date',
+                    value=budget && budget.end_date ? budget.end_date.toISOString().split('T')[0] : '',
+                    required
+                  )
+                  .invalid-feedback Please provide an end date.
+
+            .mb-3
+              label.form-label(for='category') Category
+              select.form-select(id='category', name='category', required)
+                option(value='', disabled, selected=!budget) Select category
+                each category in categories
+                  option(
+                    value=category._id,
+                    selected=budget && budget.category && budget.category.toString() === category._id.toString()
+                  )= category.name
+              .invalid-feedback Please select a category.
+              if categories.length === 0
+                .form-text.text-warning
+                  i.bi.bi-exclamation-triangle.me-1
+                  | No categories available. 
+                  a(href='/budget/category/create') Create a category first.
+
+            .d-flex.justify-content-between
+              a.btn.btn-secondary(href='/budget')
+                i.bi.bi-arrow-left.me-1
+                | Back to Budgets
+              button.btn.btn-primary(type='submit', disabled=categories.length === 0)
+                i.bi.bi-save.me-1
+                = budget ? 'Update Budget' : 'Create Budget'
+
+block scripts
+  script.
+    // Set default dates based on period
+    document.getElementById('period').addEventListener('change', function() {
+      const period = this.value;
+      const startDateInput = document.getElementById('start_date');
+      const endDateInput = document.getElementById('end_date');
+      
+      if (!startDateInput.value) {
+        const today = new Date();
+        startDateInput.value = today.toISOString().split('T')[0];
+        
+        let endDate = new Date(today);
+        switch(period) {
+          case 'weekly':
+            endDate.setDate(today.getDate() + 7);
+            break;
+          case 'monthly':
+            endDate.setMonth(today.getMonth() + 1);
+            break;
+          case 'yearly':
+            endDate.setFullYear(today.getFullYear() + 1);
+            break;
+        }
+        endDateInput.value = endDate.toISOString().split('T')[0];
+      }
+    });
+
+    // Validate end date is after start date
+    function validateDates() {
+      const startDate = document.getElementById('start_date').value;
+      const endDate = document.getElementById('end_date').value;
+      const endDateInput = document.getElementById('end_date');
+      
+      if (startDate && endDate && new Date(endDate) <= new Date(startDate)) {
+        endDateInput.setCustomValidity('End date must be after start date');
+      } else {
+        endDateInput.setCustomValidity('');
+      }
+    }
+
+    document.getElementById('start_date').addEventListener('change', validateDates);
+    document.getElementById('end_date').addEventListener('change', validateDates);

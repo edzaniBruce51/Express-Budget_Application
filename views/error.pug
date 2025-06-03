@@ -1,0 +1,34 @@
+extends layout
+
+block content
+  .row.justify-content-center
+    .col-md-6.text-center
+      .error-page
+        h1.display-1.text-muted= error.status || 500
+        h2.mb-3= message || 'Something went wrong'
+        
+        if error.status === 404
+          p.lead The page you're looking for doesn't exist.
+          i.bi.bi-exclamation-triangle.text-warning.display-4.my-4
+        else if error.status === 403
+          p.lead You don't have permission to access this resource.
+          i.bi.bi-shield-exclamation.text-danger.display-4.my-4
+        else
+          p.lead An unexpected error occurred. Please try again later.
+          i.bi.bi-bug.text-danger.display-4.my-4
+        
+        .mt-4
+          a.btn.btn-primary.me-2(href='/dashboard')
+            i.bi.bi-house.me-1
+            | Go to Dashboard
+          a.btn.btn-outline-secondary(href='javascript:history.back()')
+            i.bi.bi-arrow-left.me-1
+            | Go Back
+
+        if error && error.stack && process.env.NODE_ENV === 'development'
+          .mt-5
+            .card
+              .card-header
+                h5.mb-0 Error Details (Development Mode)
+              .card-body
+                pre.text-start.small= error.stack

@@ -1,0 +1,79 @@
+extends ../layout
+
+block content
+  .row.justify-content-center
+    .col-md-6.col-lg-4
+      .card.shadow
+        .card-body.p-4
+          .text-center.mb-4
+            i.bi.bi-person-plus.text-primary.display-4
+            h3.mt-2 Register
+            p.text-muted Create your account to start tracking your budget.
+
+          // Display validation errors
+          if errors && errors.length > 0
+            .alert.alert-danger
+              ul.mb-0
+                each error in errors
+                  li= error.msg
+
+          form(method='POST', action='/auth/register')
+            .mb-3
+              label.form-label(for='username') Username
+              input.form-control(
+                type='text',
+                id='username',
+                name='username',
+                value=username || '',
+                required,
+                autofocus,
+                minlength='3',
+                maxlength='80',
+                pattern='[a-zA-Z0-9]+',
+                title='Username must contain only letters and numbers'
+              )
+              .form-text Username must be 3-80 characters, letters and numbers only.
+
+            .mb-3
+              label.form-label(for='password') Password
+              input.form-control(
+                type='password',
+                id='password',
+                name='password',
+                required,
+                minlength='6'
+              )
+              .form-text Password must be at least 6 characters long.
+
+            .mb-3
+              label.form-label(for='confirm_password') Confirm Password
+              input.form-control(
+                type='password',
+                id='confirm_password',
+                name='confirm_password',
+                required
+              )
+
+            .d-grid.mb-3
+              button.btn.btn-primary(type='submit')
+                i.bi.bi-person-plus.me-1
+                | Create Account
+
+          .text-center
+            p.mb-0
+              | Already have an account? 
+              a(href='/auth/login') Sign in here
+
+block scripts
+  script.
+    // Password confirmation validation
+    document.getElementById('confirm_password').addEventListener('input', function() {
+      const password = document.getElementById('password').value;
+      const confirmPassword = this.value;
+      
+      if (password !== confirmPassword) {
+        this.setCustomValidity('Passwords do not match');
+      } else {
+        this.setCustomValidity('');
+      }
+    });
