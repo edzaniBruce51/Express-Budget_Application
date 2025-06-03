@@ -50,7 +50,7 @@ app.use(session({
   }
 }));
 
-// Authentication middleware
+// Authentication middleware.
 const { getCurrentUser } = require('./middleware/auth');
 app.use(getCurrentUser);
 
