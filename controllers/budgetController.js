@@ -20,7 +20,7 @@ const budget_list = asyncHandler(async (req, res, next) => {
         const expenses = await Expense.aggregate([
           {
             $match: {
-              user: mongoose.Types.ObjectId(userId),
+              user: new mongoose.Types.ObjectId(userId),
               category: budget.category._id,
               date: {
                 $gte: budget.start_date,
@@ -229,3 +229,4 @@ module.exports = {
   budget_create_post,
   budget_detail
 };
+
