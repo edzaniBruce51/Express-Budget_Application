@@ -19,7 +19,7 @@ const dashboard_get = asyncHandler(async (req, res, next) => {
     const monthlyExpenses = await Expense.aggregate([
       {
         $match: {
-          user: mongoose.Types.ObjectId(userId),
+          user: new mongoose.Types.ObjectId(userId),
           date: {
             $gte: startOfMonth,
             $lte: endOfMonth
@@ -42,7 +42,7 @@ const dashboard_get = asyncHandler(async (req, res, next) => {
     const expensesByCategory = await Expense.aggregate([
       {
         $match: {
-          user: mongoose.Types.ObjectId(userId),
+          user: new mongoose.Types.ObjectId(userId),
           date: {
             $gte: startOfMonth,
             $lte: endOfMonth
@@ -79,7 +79,7 @@ const dashboard_get = asyncHandler(async (req, res, next) => {
     const budgets = await Budget.aggregate([
       {
         $match: {
-          user: mongoose.Types.ObjectId(userId),
+          user: new mongoose.Types.ObjectId(userId),
           is_active: true,
           start_date: { $lte: currentDate },
           end_date: { $gte: currentDate }
@@ -106,7 +106,7 @@ const dashboard_get = asyncHandler(async (req, res, next) => {
                 $expr: {
                   $and: [
                     { $eq: ['$category', '$$categoryId'] },
-                    { $eq: ['$user', mongoose.Types.ObjectId(userId)] },
+                    { $eq: ['$user', new mongoose.Types.ObjectId(userId)] },
                     { $gte: ['$date', '$$startDate'] },
                     { $lte: ['$date', '$$endDate'] }
                   ]
@@ -204,3 +204,4 @@ const dashboard_get = asyncHandler(async (req, res, next) => {
 module.exports = {
   dashboard_get
 };
+
