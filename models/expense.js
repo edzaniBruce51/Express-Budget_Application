@@ -115,5 +115,5 @@ ExpenseSchema.statics.getTotalByCategory = function(userId, startDate, endDate) 
   ]);
 };
 
-// Export model
+// Export model.
 module.exports = mongoose.model('Expense', ExpenseSchema);
