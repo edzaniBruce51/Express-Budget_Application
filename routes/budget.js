@@ -27,7 +27,7 @@ router.get('/category/:id/edit', categoryController.category_update_get);
 router.post('/category/:id/edit', categoryController.category_update_post);
 router.post('/category/:id/delete', categoryController.category_delete_post);
 
-// Expense routes
+// Expense routes.
 router.get('/expenses', expenseController.expense_list);
 router.get('/expense/create', expenseController.expense_create_get);
 router.post('/expense/create', expenseController.expense_create_post);
