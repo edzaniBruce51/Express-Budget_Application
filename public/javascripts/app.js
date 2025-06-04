@@ -118,9 +118,9 @@ document.addEventListener('DOMContentLoaded', function() {
 window.BudgetTracker = {
   // Format currency
   formatCurrency: function(amount) {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-ZA', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'ZAR'
     }).format(amount);
   },
 
