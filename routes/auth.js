@@ -15,7 +15,7 @@ router.post('/login', requireGuest, authController.login_post);
 router.get('/register', requireGuest, authController.register_get);
 router.post('/register', requireGuest, authController.register_post);
 
-// Logout route
+// Logout route.
 router.post('/logout', authController.logout_post);
 
 module.exports = router;
