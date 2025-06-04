@@ -25,7 +25,7 @@ const getCurrentUser = async (req, res, next) => {
   }
 };
 
-// Middleware to require authentication
+// Middleware to require authentication.
 const requireAuth = (req, res, next) => {
   if (!req.user) {
     req.session.returnTo = req.originalUrl;
