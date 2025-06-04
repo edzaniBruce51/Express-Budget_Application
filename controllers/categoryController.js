@@ -4,7 +4,7 @@ const Category = require('../models/category');
 const Expense = require('../models/expense');
 const Budget = require('../models/budget');
 
-// Display list of all categories
+// Display list of all categories.
 const category_list = asyncHandler(async (req, res, next) => {
   try {
     const categories = await Category.find({ user: req.user._id })
