@@ -3,7 +3,7 @@ const { body, validationResult } = require('express-validator');
 const Expense = require('../models/expense');
 const Category = require('../models/category');
 
-// Display list of all expenses
+// Display list of all expenses.
 const expense_list = asyncHandler(async (req, res, next) => {
   const page = parseInt(req.query.page) || 1;
   const limit = 20;
