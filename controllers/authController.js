@@ -160,7 +160,7 @@ const register_post = [
   })
 ];
 
-// Handle logout
+// Handle logout.
 const logout_post = asyncHandler(async (req, res, next) => {
   req.session.destroy((err) => {
     if (err) {
