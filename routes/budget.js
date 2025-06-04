@@ -17,6 +17,8 @@ router.get('/', budgetController.budget_list);
 router.get('/create', budgetController.budget_create_get);
 router.post('/create', budgetController.budget_create_post);
 router.get('/budget/:id', budgetController.budget_detail);
+router.get('/budget/:id/edit', budgetController.budget_update_get);
+router.post('/budget/:id/edit', budgetController.budget_update_post);
 
 // Category routes
 router.get('/categories', categoryController.category_list);
@@ -37,3 +39,4 @@ router.post('/expense/:id/edit', expenseController.expense_update_post);
 router.post('/expense/:id/delete', expenseController.expense_delete_post);
 
 module.exports = router;
+

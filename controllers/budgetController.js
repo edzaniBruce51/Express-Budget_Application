@@ -8,7 +8,7 @@ const Expense = require('../models/expense');
 // Display list of all budgets
 const budget_list = asyncHandler(async (req, res, next) => {
   const userId = req.user._id;
-  
+
   try {
     const budgets = await Budget.find({ user: userId })
       .populate('category')
@@ -132,9 +132,9 @@ const budget_create_post = [
 
     try {
       // Verify category belongs to user
-      const category = await Category.findOne({ 
-        _id: req.body.category, 
-        user: req.user._id 
+      const category = await Category.findOne({
+        _id: req.body.category,
+        user: req.user._id
       });
 
       if (!category) {
@@ -223,10 +223,164 @@ const budget_detail = asyncHandler(async (req, res, next) => {
   }
 });
 
+// Display budget update form
+const budget_update_get = asyncHandler(async (req, res, next) => {
+  const budgetId = req.params.id;
+
+  try {
+    const budget = await Budget.findOne({
+      _id: budgetId,
+      user: req.user._id
+    });
+    const categories = await Category.find({ user: req.user._id }).sort({ name: 1 });
+
+    if (!budget) {
+      return res.status(404).render('error', {
+        message: 'Budget not found',
+        error: { status: 404 }
+      });
+    }
+
+    // Format dates for HTML input
+    const formattedBudget = {
+      ...budget.toObject(),
+      start_date: budget.start_date.toISOString().split('T')[0],
+      end_date: budget.end_date.toISOString().split('T')[0]
+    };
+
+    res.render('budget/form', {
+      title: 'Edit Budget',
+      budget: formattedBudget,
+      categories,
+      errors: []
+    });
+
+  } catch (error) {
+    console.error('Budget update form error:', error);
+    res.status(500).render('error', {
+      message: 'Error loading budget',
+      error: { status: 500 }
+    });
+  }
+});
+
+// Handle budget update form submission
+const budget_update_post = [
+  // Validate and sanitize fields
+  body('name')
+    .trim()
+    .isLength({ min: 1, max: 100 })
+    .withMessage('Budget name must be between 1 and 100 characters')
+    .escape(),
+  body('amount')
+    .isFloat({ min: 0.01 })
+    .withMessage('Amount must be a positive number'),
+  body('period')
+    .isIn(['weekly', 'monthly', 'yearly'])
+    .withMessage('Invalid period selected'),
+  body('start_date')
+    .isISO8601()
+    .withMessage('Invalid start date'),
+  body('end_date')
+    .isISO8601()
+    .withMessage('Invalid end date')
+    .custom((value, { req }) => {
+      if (new Date(value) <= new Date(req.body.start_date)) {
+        throw new Error('End date must be after start date');
+      }
+      return true;
+    }),
+  body('category')
+    .isMongoId()
+    .withMessage('Invalid category selected'),
+
+  asyncHandler(async (req, res, next) => {
+    const budgetId = req.params.id;
+    const errors = validationResult(req);
+    const categories = await Category.find({ user: req.user._id }).sort({ name: 1 });
+
+    if (!errors.isEmpty()) {
+      const budget = {
+        ...req.body,
+        _id: budgetId,
+        start_date: req.body.start_date, // Already a string from form
+        end_date: req.body.end_date      // Already a string from form
+      };
+      return res.render('budget/form', {
+        title: 'Edit Budget',
+        budget,
+        categories,
+        errors: errors.array()
+      });
+    }
+
+    try {
+      const budget = await Budget.findOne({
+        _id: budgetId,
+        user: req.user._id
+      });
+
+      if (!budget) {
+        return res.status(404).render('error', {
+          message: 'Budget not found',
+          error: { status: 404 }
+        });
+      }
+
+      // Verify category belongs to user
+      const category = await Category.findOne({
+        _id: req.body.category,
+        user: req.user._id
+      });
+
+      if (!category) {
+        return res.render('budget/form', {
+          title: 'Edit Budget',
+          budget: {
+            ...req.body,
+            _id: budgetId,
+            start_date: req.body.start_date, // Already a string from form
+            end_date: req.body.end_date      // Already a string from form
+          },
+          categories,
+          errors: [{ msg: 'Invalid category selected' }]
+        });
+      }
+
+      // Update budget
+      budget.name = req.body.name;
+      budget.amount = req.body.amount;
+      budget.period = req.body.period;
+      budget.start_date = req.body.start_date;
+      budget.end_date = req.body.end_date;
+      budget.category = req.body.category;
+
+      await budget.save();
+      res.redirect(`/budget/budget/${budgetId}`);
+
+    } catch (error) {
+      console.error('Budget update error:', error);
+      res.render('budget/form', {
+        title: 'Edit Budget',
+        budget: {
+          ...req.body,
+          _id: budgetId,
+          start_date: req.body.start_date, // Already a string from form
+          end_date: req.body.end_date      // Already a string from form
+        },
+        categories,
+        errors: [{ msg: 'Error updating budget. Please try again.' }]
+      });
+    }
+  })
+];
+
 module.exports = {
   budget_list,
   budget_create_get,
   budget_create_post,
-  budget_detail
+  budget_detail,
+  budget_update_get,
+  budget_update_post
 };
 
