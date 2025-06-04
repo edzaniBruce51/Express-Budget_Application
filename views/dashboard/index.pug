@@ -67,7 +67,7 @@ block content
               .mb-3
                 .d-flex.justify-content-between.align-items-center.mb-1
                   span.fw-medium= budget.category.name
-                  small.text-muted R#{budget.spent} / $#{budget.amount}
+                  small.text-muted R#{budget.spent} / R#{budget.amount}
                 
                 .progress(style='height: 8px;')
                   - const progressClass = budget.progress > 90 ? 'bg-danger' : budget.progress > 75 ? 'bg-warning' : 'bg-success'
