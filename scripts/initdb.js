@@ -19,29 +19,29 @@ const mongoDB = process.env.MONGODB_URI || 'mongodb://localhost:27017/budget_tra
 
 async function initializeDatabase() {
   try {
-    console.log('🔌 Connecting to MongoDB...');
+    console.log('Connecting to MongoDB...');
     await mongoose.connect(mongoDB);
-    console.log('✅ Connected to MongoDB');
+    console.log('Connected to MongoDB');
 
     // Clear existing data
-    console.log('🧹 Clearing existing data...');
+    console.log('Clearing existing data...');
     await User.deleteMany({});
     await Category.deleteMany({});
     await Budget.deleteMany({});
     await Expense.deleteMany({});
-    console.log('✅ Existing data cleared');
+    console.log('Existing data cleared');
 
     // Create demo user
-    console.log('👤 Creating demo user...');
+    console.log('Creating demo user...');
     const demoUser = new User({
       username: 'demo',
       password_hash: 'password123' // Will be hashed by pre-save middleware
     });
     await demoUser.save();
-    console.log('✅ Demo user created (username: demo, password: password123)');
+    console.log('Demo user created (username: demo, password: password123)');
 
     // Create categories
-    console.log('📂 Creating categories...');
+    console.log('Creating categories...');
     const categories = [
       { name: 'Food & Dining', description: 'Groceries, restaurants, takeout', color: '#FF6B6B', user: demoUser._id },
       { name: 'Transportation', description: 'Gas, public transport, car maintenance', color: '#4ECDC4', user: demoUser._id },
@@ -54,10 +54,10 @@ async function initializeDatabase() {
     ];
 
     const createdCategories = await Category.insertMany(categories);
-    console.log(`✅ Created ${createdCategories.length} categories`);
+    console.log(`Created ${createdCategories.length} categories`);
 
     // Create budgets
-    console.log('💰 Creating budgets...');
+    console.log('Creating budgets...');
     const currentDate = new Date();
     const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
     const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
@@ -93,10 +93,10 @@ async function initializeDatabase() {
     ];
 
     const createdBudgets = await Budget.insertMany(budgets);
-    console.log(`✅ Created ${createdBudgets.length} budgets`);
+    console.log(`Created ${createdBudgets.length} budgets`);
 
     // Create sample expenses
-    console.log('💸 Creating sample expenses...');
+    console.log('Creating sample expenses...');
     const expenses = [];
     
     // Generate expenses for the current month
@@ -118,23 +118,23 @@ async function initializeDatabase() {
     }
 
     const createdExpenses = await Expense.insertMany(expenses);
-    console.log(`✅ Created ${createdExpenses.length} sample expenses`);
+    console.log(`Created ${createdExpenses.length} sample expenses`);
 
-    console.log('\n🎉 Database initialization complete!');
-    console.log('\n📊 Summary:');
-    console.log(`   👤 Users: 1 (demo user)`);
-    console.log(`   📂 Categories: ${createdCategories.length}`);
-    console.log(`   💰 Budgets: ${createdBudgets.length}`);
-    console.log(`   💸 Expenses: ${createdExpenses.length}`);
-    console.log('\n🚀 You can now start the application with: npm run devstart');
-    console.log('🔑 Login with: username "demo", password "password123"');
+    console.log('\n Database initialization complete!');
+    console.log('\n Summary:');
+    console.log(` Users: 1 (demo user)`);
+    console.log(` Categories: ${createdCategories.length}`);
+    console.log(` Budgets: ${createdBudgets.length}`);
+    console.log(` Expenses: ${createdExpenses.length}`);
+    console.log('\n You can now start the application with: npm run devstart');
+    console.log(' Login with: username "demo", password "password123"');
 
   } catch (error) {
-    console.error('❌ Error initializing database:', error);
+    console.error(' Error initializing database:', error);
     process.exit(1);
   } finally {
     await mongoose.connection.close();
-    console.log('🔌 Database connection closed');
+    console.log(' Database connection closed');
     process.exit(0);
   }
 }
