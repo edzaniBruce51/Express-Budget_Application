@@ -47,7 +47,7 @@ const BudgetSchema = new Schema({
   timestamps: true
 });
 
-// Virtual for budget's URL
+// Virtual for budget's URL.
 BudgetSchema.virtual('url').get(function () {
   return `/budget/budget/${this._id}`;
 });
