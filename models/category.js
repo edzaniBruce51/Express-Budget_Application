@@ -30,7 +30,7 @@ const CategorySchema = new Schema({
   timestamps: true
 });
 
-// Virtual for category's URL
+// Virtual for category's URL.
 CategorySchema.virtual('url').get(function () {
   return `/budget/category/${this._id}`;
 });
