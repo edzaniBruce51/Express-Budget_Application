@@ -27,7 +27,7 @@ block content
             .card.bg-light.mb-3
               .card-body
                 h5.card-title Total Spent
-                h3.text-danger $#{totalSpent}
+                h3.text-danger R#{totalSpent}
           .col-md-6
             .card.bg-light.mb-3
               .card-body
@@ -78,7 +78,7 @@ block content
                 h5.card-title= budget.name
                 p.card-text
                   strong Amount: 
-                  | $#{budget.amount.toFixed(2)}
+                  | R#{budget.amount.toFixed(2)}
                 p.card-text
                   strong Period: 
                   | #{budget.start_date.toLocaleDateString()} to #{budget.end_date.toLocaleDateString()}
