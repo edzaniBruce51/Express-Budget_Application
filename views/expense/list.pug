@@ -47,7 +47,7 @@ block content
                     .small.text-muted= expense.notes
                 td
                   span.badge.rounded-pill(style=`background-color: ${expense.category.color}`)= expense.category.name
-                td.text-end.fw-bold $#{expense.amount.toFixed(2)}
+                td.text-end.fw-bold R#{expense.amount.toFixed(2)}
                 td
                   span.badge.bg-secondary= expense.payment_method.replace('_', ' ').toUpperCase()
                 td

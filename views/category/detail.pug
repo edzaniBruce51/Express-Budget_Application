@@ -56,7 +56,7 @@ block content
               tr
                 td= expense.date.toLocaleDateString()
                 td= expense.description
-                td.text-end.fw-bold $#{expense.amount.toFixed(2)}
+                td.text-end.fw-bold R#{expense.amount.toFixed(2)}
                 td
                   a.btn.btn-sm.btn-outline-primary.me-1(href=`/budget/expense/${expense._id}`)
                     i.bi.bi-eye
