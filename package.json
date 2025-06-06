@@ -4,7 +4,7 @@
   "private": true,
   "description": "Personal Budget Tracker built with Express.js",
   "engines": {
-    "node": "16.x"
+    "node": ">=16.0.0"
   },
   "scripts": {
     "start": "node ./bin/www",
